@@ -1,11 +1,10 @@
 <template>
-    <!--    <div v-for="item in this.data().colors">-->
-    <!--        {{item}}-->
-    <!--    </div>-->
     <div class="container">
-        <div v-for="line in colors" :vid-id="line" :key="line">
-            <div v-for="point in line" :vid-id="point" :key="point">
-                <Token v-bind:color="point" v-on:onClickAndSendPosition="showPosition"></Token>
+        <div v-for="(line, i) in statusMatrix" :key="line">
+            <div v-for="(point, j) in line" :key="point">
+                <Token :color="colorMatrix[i][j]"
+                       :token-status="point"
+                       :position="[j,i]" v-on:onClickAndSendPosition="showPosition"></Token>
             </div>
         </div>
     </div>
@@ -32,28 +31,28 @@
         return result;
     }
 
-    let colorArray;
-
+    let statusMatrix;
 
     export default {
         name: "Board",
         components: {
             Token
         },
-        methods:{
+        methods: {
             showPosition: function (data) {
                 console.log(data);
             }
         },
         data: function () {
             return {
-                colors: mapToColor(colorArray),
+                statusMatrix: statusMatrix,
+                colorMatrix: mapToColor(statusMatrix),
                 white: "white"
             }
         },
         beforeCreate() {
-            colorArray = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, 0, 0], [0, 0, 0, 1, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
-            console.log(colorArray);
+            statusMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, 0, 0], [0, 0, 0, 1, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
+            console.log(statusMatrix);
             axios.post(
                 'http://localhost:8080/api/prob',
                 {
