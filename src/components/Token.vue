@@ -1,5 +1,7 @@
 <template>
-    <div class="token" :style="{backgroundColor: color}"></div>
+    <div class="token"
+         v-on:click="sendPositionToBoard"
+         :style="{backgroundColor: color}"></div>
 </template>
 
 <script>
@@ -8,6 +10,11 @@
         props:{
             color: String,
         },
+        methods:{
+            sendPositionToBoard: function () {
+                this.$emit("onClickAndSendPosition", "position");
+            }
+        }
     }
 </script>
 

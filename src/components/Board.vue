@@ -5,7 +5,7 @@
     <div class="container">
         <div v-for="line in colors" :vid-id="line" :key="line">
             <div v-for="point in line" :vid-id="point" :key="point">
-                <Token v-bind:color="point"></Token>
+                <Token v-bind:color="point" v-on:onClickAndSendPosition="showPosition"></Token>
             </div>
         </div>
     </div>
@@ -39,6 +39,11 @@
         name: "Board",
         components: {
             Token
+        },
+        methods:{
+            showPosition: function (data) {
+                console.log(data);
+            }
         },
         data: function () {
             return {
