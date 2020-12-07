@@ -14,6 +14,7 @@
     import Token from "./Token";
     import axios from 'axios';
 
+
     function mapToColor(colorMatrix) {
         let result = new Array(8);
         for (let i = 0; i < 8; i++) {
@@ -31,7 +32,41 @@
         return result;
     }
 
-    let statusMatrix;
+    class Arena {
+        constructor(player1, player2, board) {
+            this.players = Object;
+            this.players[-1] = player1;
+            this.players[1] = player2;
+            this.board = board;
+        }
+
+        play() {
+
+        }
+    }
+
+    //TODO: 从 showPosition() 那里取回 position
+    // 或许可以参考这 https://zhuanlan.zhihu.com/p/53618435
+    function humanPlayer(board, curPlayer) {
+
+        axios.post(
+            'http://0.0.0.0:8080/api/prob',
+            {
+                "board": board,
+                "cur_player": curPlayer
+            })
+            .then(function (response) {
+                console.log(response.data);
+            })
+            .catch(function (error) {
+                alert(error);
+            });
+    }
+
+    let statusMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, 0, 0], [0, 0, 0, 1, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
+    let arena = new Arena();
+
+
 
     export default {
         name: "Board",
@@ -51,10 +86,9 @@
             }
         },
         beforeCreate() {
-            statusMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, 0, 0], [0, 0, 0, 1, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
             console.log(statusMatrix);
             axios.post(
-                'http://localhost:8080/api/prob',
+                'http://0.0.0.0:8080/api/prob',
                 {
                     "board": [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, 0, 0], [0, 0, 0, 1, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]],
                     "cur_player": 1

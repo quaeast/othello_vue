@@ -7,8 +7,6 @@
 </template>
 
 <script>
-
-
     export default {
         name: "Token",
         props:{
