@@ -8,12 +8,26 @@
             </div>
         </div>
     </div>
+    {{white}}
 </template>
 
 <script>
     import Token from "./Token";
     import axios from 'axios';
+    import {Observable, Subject} from 'rxjs';
 
+
+    Observable.ofProxyChanges = (target) => {
+        let subject = new Subject;
+        let proxy = new Proxy(target, {
+            set(target, key, val) {
+                target[key] = val;
+                subject.next();
+                return true;
+            }
+        });
+        return [proxy, subject.asObservable()];
+    }
 
     function mapToColor(colorMatrix) {
         let result = new Array(8);
@@ -32,40 +46,44 @@
         return result;
     }
 
-    class Arena {
-        constructor(player1, player2, board) {
-            this.players = Object;
-            this.players[-1] = player1;
-            this.players[1] = player2;
-            this.board = board;
-        }
-
-        play() {
-
-        }
-    }
-
-    //TODO: 从 showPosition() 那里取回 position
-    // 或许可以参考这 https://zhuanlan.zhihu.com/p/53618435
-    function humanPlayer(board, curPlayer) {
-
+    function AIRun() {
         axios.post(
-            'http://0.0.0.0:8080/api/prob',
+            'http://localhost:8080/api/prob',
             {
-                "board": board,
-                "cur_player": curPlayer
+                "board": statusMatrix,
+                "cur_player": 1
             })
             .then(function (response) {
-                console.log(response.data);
-            })
-            .catch(function (error) {
-                alert(error);
+                console.log(response.data["action"]);
+                axios.post(
+                    'http://localhost:8080/api/next_state',
+                    {
+                        "board": statusMatrix,
+                        "cur_player": 1,
+                        "action": response.data["action"]
+                    }
+                ).then(function (response) {
+                    console.log(response.data["board"]);
+                    statusMatrix = response.data["board"];
+                })
             });
+
     }
 
     let statusMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, 0, 0], [0, 0, 0, 1, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
-    let arena = new Arena();
+    let [positionContainer, positionChange$] = Observable.ofProxyChanges({});
+    positionChange$.subscribe({
+        next: function () {
+            AIRun();
+        }
+    });
 
+    let white = "white";
+
+    setTimeout(()=>{
+        white = "black";
+        console.log(white);
+    }, 2000)
 
 
     export default {
@@ -75,20 +93,21 @@
         },
         methods: {
             showPosition: function (data) {
-                console.log(data);
+                positionContainer.position = data;
+                // console.log(data);
             }
         },
         data: function () {
             return {
                 statusMatrix: statusMatrix,
                 colorMatrix: mapToColor(statusMatrix),
-                white: "white"
+                white: white
             }
         },
         beforeCreate() {
             console.log(statusMatrix);
             axios.post(
-                'http://0.0.0.0:8080/api/prob',
+                'http://localhost:8080/api/prob',
                 {
                     "board": [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, 0, 0], [0, 0, 0, 1, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]],
                     "cur_player": 1
