@@ -13,7 +13,6 @@
 <script>
     import Token from "./Token";
     import axios from 'axios';
-    import {Observable, Subject} from 'rxjs';
 
     function mapToColor(colorMatrix) {
         let result = new Array(8);
@@ -32,18 +31,6 @@
         return result;
     }
 
-    Observable.ofProxyChanges = (target) => {
-        let subject = new Subject;
-        let proxy = new Proxy(target, {
-            set(target, key, val) {
-                target[key] = val;
-                subject.next();
-                return true;
-            }
-        });
-        return [proxy, subject.asObservable()];
-    }
-
     let statusMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, 0, 0], [0, 0, 0, 1, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
 
     export default {
@@ -58,8 +45,7 @@
         data: function () {
             return {
                 statusMatrix: statusMatrix,
-                positionContainer: null,
-                positionChange$: null,
+                position: null,
                 // 当前执棋者身份，0黑棋（-1），1白棋（1）
                 currentPlayer: null,
             }
@@ -71,10 +57,11 @@
         },
         methods: {
             showPosition: function (data) {
-                this.positionContainer.position = data;
+                this.position = data;
                 console.log(data);
             },
             AIRun: function () {
+                console.log("AI run");
                 if (this.playerStatus[this.currentPlayer]===0){
                     return;
                 }
@@ -101,21 +88,21 @@
                     });
             },
             humanRun: function () {
+                console.log("human run");
                 if (this.playerStatus[this.currentPlayer]===1){
                     return;
                 }
-
+            }
+        },
+        watch:{
+            position: function () {
+                this.AIRun();
+                this.humanRun();
             }
         },
         beforeCreate() {
         },
         created() {
-            [this.positionContainer, this.positionChange$] = Observable.ofProxyChanges({});
-            this.currentPlayer = this.playerStatus[0];
-            this.positionChange$.subscribe({
-                next: this.AIRun
-            });
-            console.log("ok");
         }
     }
 </script>
