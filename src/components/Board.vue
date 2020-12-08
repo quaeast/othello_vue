@@ -31,6 +31,11 @@
         return result;
     }
 
+    function mapToColorNum(curPlayer) {
+        return curPlayer === 0 ? -1 : curPlayer;
+    }
+
+
     let statusMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, 0, 0], [0, 0, 0, 1, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
 
     export default {
@@ -47,10 +52,10 @@
                 statusMatrix: statusMatrix,
                 position: null,
                 // 当前执棋者身份，0黑棋（-1），1白棋（1）
-                currentPlayer: null,
+                currentPlayer: 0,
             }
         },
-        computed:{
+        computed: {
             colorMatrix: function () {
                 return mapToColor(this.statusMatrix);
             },
@@ -59,59 +64,68 @@
             showPosition: function (data) {
                 this.position = data;
                 console.log(data);
+                console.log(this.currentPlayer);
             },
             AIRun: function () {
-                if (this.playerStatus[this.currentPlayer]===0){
+                console.log(this.playerStatus, this.currentPlayer);
+                if (this.playerStatus[this.currentPlayer] === 0) {
                     return;
                 }
+                console.log("ai run");
                 const currentThis = this;
                 axios.post(
-                    'http://localhost:8080/api/prob',
+                    'http://47.240.25.164:5000/prob',
                     {
                         "board": currentThis.statusMatrix,
-                        "cur_player": 1
+                        "cur_player": mapToColorNum(currentThis.currentPlayer)
                     })
                     .then(function (response) {
                         console.log(response.data["action"]);
                         axios.post(
-                            'http://localhost:8080/api/next_state',
+                            'http://47.240.25.164:5000/next_state',
                             {
                                 "board": currentThis.statusMatrix,
-                                "cur_player": 1,
+                                "cur_player": mapToColorNum(currentThis.currentPlayer),
                                 "action": response.data["action"]
                             }
                         ).then(function (response) {
                             currentThis.statusMatrix = response.data["board"];
+                            currentThis.currentPlayer = (1 + currentThis.currentPlayer) % 2;
                         })
                     });
             },
             humanRun: function () {
-                if (this.playerStatus[this.currentPlayer]===1){
+                if (this.playerStatus[this.currentPlayer] === 1) {
                     return;
                 }
+                console.log("human run");
                 const currentThis = this;
-                const action = this.position[0]*8+this.position[1];
+                const action = this.position[1] * 8 + this.position[0];
                 axios.post(
-                    'http://localhost:8080/api/next_state',
+                    'http://47.240.25.164:5000/next_state',
                     {
                         "board": currentThis.statusMatrix,
-                        "cur_player": 1,
+                        "cur_player": mapToColorNum(currentThis.currentPlayer),
                         "action": action
                     }
                 ).then(function (response) {
                     currentThis.statusMatrix = response.data["board"];
+                    currentThis.currentPlayer = (1 + currentThis.currentPlayer) % 2;
                 })
             }
         },
-        watch:{
+        watch: {
             currentPlayer: function () {
                 this.AIRun();
+            },
+            position: function () {
                 this.humanRun();
             }
         },
         beforeCreate() {
         },
         created() {
+            this.AIRun();
         }
     }
 </script>
