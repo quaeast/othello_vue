@@ -58,11 +58,16 @@
         data: function () {
             return {
                 statusMatrix: statusMatrix,
-                colorMatrix: mapToColor(statusMatrix),
                 positionContainer: null,
                 positionChange$: null,
+                // 当前执棋者身份，0黑棋（-1），1白棋（1）
                 currentPlayer: null,
             }
+        },
+        computed:{
+            colorMatrix: function () {
+                return mapToColor(this.statusMatrix);
+            },
         },
         methods: {
             showPosition: function (data) {
@@ -70,6 +75,9 @@
                 console.log(data);
             },
             AIRun: function () {
+                if (this.playerStatus[this.currentPlayer]===0){
+                    return;
+                }
                 const currentThis = this;
                 console.log(currentThis.statusMatrix);
                 axios.post(
@@ -88,14 +96,15 @@
                                 "action": response.data["action"]
                             }
                         ).then(function (response) {
-                            console.log(response.data["board"]);
                             currentThis.statusMatrix = response.data["board"];
-                            currentThis.colorMatrix = mapToColor(currentThis.statusMatrix);
-                            console.log(this.colorMatrix);
                         })
                     });
             },
             humanRun: function () {
+                if (this.playerStatus[this.currentPlayer]===1){
+                    return;
+                }
+
             }
         },
         beforeCreate() {
