@@ -1,7 +1,7 @@
 <template>
 <!--  <img alt="Vue logo" src="./assets/logo.png">-->
 <!--  <HelloWorld msg="Welcome to Your Vue.js App"/>-->
-    <Board></Board>
+    <Board :playerStatus="[1, 1]"></Board>
 </template>
 
 <script>

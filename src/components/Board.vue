@@ -8,26 +8,12 @@
             </div>
         </div>
     </div>
-    {{white}}
 </template>
 
 <script>
     import Token from "./Token";
     import axios from 'axios';
     import {Observable, Subject} from 'rxjs';
-
-
-    Observable.ofProxyChanges = (target) => {
-        let subject = new Subject;
-        let proxy = new Proxy(target, {
-            set(target, key, val) {
-                target[key] = val;
-                subject.next();
-                return true;
-            }
-        });
-        return [proxy, subject.asObservable()];
-    }
 
     function mapToColor(colorMatrix) {
         let result = new Array(8);
@@ -46,79 +32,81 @@
         return result;
     }
 
-    function AIRun() {
-        axios.post(
-            'http://localhost:8080/api/prob',
-            {
-                "board": statusMatrix,
-                "cur_player": 1
-            })
-            .then(function (response) {
-                console.log(response.data["action"]);
-                axios.post(
-                    'http://localhost:8080/api/next_state',
-                    {
-                        "board": statusMatrix,
-                        "cur_player": 1,
-                        "action": response.data["action"]
-                    }
-                ).then(function (response) {
-                    console.log(response.data["board"]);
-                    statusMatrix = response.data["board"];
-                })
-            });
-
+    Observable.ofProxyChanges = (target) => {
+        let subject = new Subject;
+        let proxy = new Proxy(target, {
+            set(target, key, val) {
+                target[key] = val;
+                subject.next();
+                return true;
+            }
+        });
+        return [proxy, subject.asObservable()];
     }
 
     let statusMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, 0, 0], [0, 0, 0, 1, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
-    let [positionContainer, positionChange$] = Observable.ofProxyChanges({});
-    positionChange$.subscribe({
-        next: function () {
-            AIRun();
-        }
-    });
-
-    let white = "white";
-
-    setTimeout(()=>{
-        white = "black";
-        console.log(white);
-    }, 2000)
-
 
     export default {
         name: "Board",
         components: {
             Token
         },
-        methods: {
-            showPosition: function (data) {
-                positionContainer.position = data;
-                // console.log(data);
-            }
+        props: {
+            // example: [1, 0] 1 for ai and 0 for human
+            playerStatus: Array
         },
         data: function () {
             return {
                 statusMatrix: statusMatrix,
                 colorMatrix: mapToColor(statusMatrix),
-                white: white
+                positionContainer: null,
+                positionChange$: null,
+                currentPlayer: null,
+            }
+        },
+        methods: {
+            showPosition: function (data) {
+                this.positionContainer.position = data;
+                console.log(data);
+            },
+            AIRun: function () {
+                const currentThis = this;
+                console.log(currentThis.statusMatrix);
+                axios.post(
+                    'http://localhost:8080/api/prob',
+                    {
+                        "board": currentThis.statusMatrix,
+                        "cur_player": 1
+                    })
+                    .then(function (response) {
+                        console.log(response.data["action"]);
+                        axios.post(
+                            'http://localhost:8080/api/next_state',
+                            {
+                                "board": currentThis.statusMatrix,
+                                "cur_player": 1,
+                                "action": response.data["action"]
+                            }
+                        ).then(function (response) {
+                            console.log(response.data["board"]);
+                            currentThis.statusMatrix = response.data["board"];
+                            currentThis.colorMatrix = mapToColor(currentThis.statusMatrix);
+                            console.log(this.colorMatrix);
+                        })
+                    });
+            },
+            humanRun: function () {
             }
         },
         beforeCreate() {
-            console.log(statusMatrix);
-            axios.post(
-                'http://localhost:8080/api/prob',
-                {
-                    "board": [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, 0, 0], [0, 0, 0, 1, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]],
-                    "cur_player": 1
-                })
-                .then(function (response) {
-                    console.log(response.data);
-                    // alert(response.data);
-                })
-                .catch(function (error) {
-                    alert(error);
-                });
+        },
+        created() {
+            [this.positionContainer, this.positionChange$] = Observable.ofProxyChanges({});
+            this.currentPlayer = this.playerStatus[0];
+            this.positionChange$.subscribe({
+                next: this.AIRun
+            });
+            console.log("ok");
         }
     }
 </script>
