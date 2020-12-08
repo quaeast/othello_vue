@@ -61,12 +61,10 @@
                 console.log(data);
             },
             AIRun: function () {
-                console.log("AI run");
                 if (this.playerStatus[this.currentPlayer]===0){
                     return;
                 }
                 const currentThis = this;
-                console.log(currentThis.statusMatrix);
                 axios.post(
                     'http://localhost:8080/api/prob',
                     {
@@ -88,14 +86,25 @@
                     });
             },
             humanRun: function () {
-                console.log("human run");
                 if (this.playerStatus[this.currentPlayer]===1){
                     return;
                 }
+                const currentThis = this;
+                const action = this.position[0]*8+this.position[1];
+                axios.post(
+                    'http://localhost:8080/api/next_state',
+                    {
+                        "board": currentThis.statusMatrix,
+                        "cur_player": 1,
+                        "action": action
+                    }
+                ).then(function (response) {
+                    currentThis.statusMatrix = response.data["board"];
+                })
             }
         },
         watch:{
-            position: function () {
+            currentPlayer: function () {
                 this.AIRun();
                 this.humanRun();
             }
