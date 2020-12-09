@@ -8,8 +8,10 @@
             </div>
         </div>
     </div>
-    <span>black: {{blackNum}}</span>
-    <span>white: {{whiteNum}}</span>
+    <div>
+        <span>black: {{blackNum}} | </span>
+        <span>white: {{whiteNum}} </span>
+    </div>
 </template>
 
 <script>
