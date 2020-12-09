@@ -1,16 +1,20 @@
 <template>
-    <div class="container">
-        <div v-for="(line, i) in statusMatrix" :key="line">
-            <div v-for="(point, j) in line" :key="point">
-                <Token :color="colorMatrix[i][j]"
-                       :token-status="point"
-                       :position="[i,j]" v-on:onClickAndSendPosition="showPosition"></Token>
+    <div>
+        <div class="container">
+            <div v-for="(line, i) in statusMatrix" :key="line">
+                <div v-for="(point, j) in line" :key="point">
+                    <Token :color="colorMatrix[i][j]"
+                           :token-status="point"
+                           :position="[i,j]" v-on:onClickAndSendPosition="showPosition"></Token>
+                </div>
             </div>
         </div>
-    </div>
-    <div>
-        <span>black: {{blackNum}} | </span>
-        <span>white: {{whiteNum}} </span>
+        <div>
+            <span>black: {{blackNum}} | </span>
+            <span>white: {{whiteNum}} </span>
+            <br><br>
+            <span>Turn: {{currentPlayer===0?"black":"white"}}</span>
+        </div>
     </div>
 </template>
 
@@ -31,7 +35,7 @@
                     result[i][j] = "rgba(255,255,255,0)";
                 }
                 if (enableMatrix[i][j] === 1) {
-                    result[i][j] = "rgba(255,0,0,1)";
+                    result[i][j] = "rgba(100,100,100,1)";
                 }
             }
         }
@@ -113,8 +117,9 @@
                     return;
                 }
                 if (this.validLen === 0) {
+                    console.log("ai skip");
                     currentThis.currentPlayer = (1 + currentThis.currentPlayer) % 2;
-                    currentThis.step++;
+                    currentThis.fetchValidPosition();
                     return;
                 }
                 console.log("ai run");
@@ -141,15 +146,16 @@
             },
             humanRun: function () {
                 const currentThis = this;
+                if (this.validLen === 0) {
+                    console.log("human skip");
+                    currentThis.currentPlayer = (1 + currentThis.currentPlayer) % 2;
+                    currentThis.fetchValidPosition();
+                    return;
+                }
                 if (this.playerStatus[this.currentPlayer] === 1) {
                     return;
                 }
                 if (this.enableMatrix[this.position[0]][this.position[1]] === 0) {
-                    return;
-                }
-                if (this.validLen === 0) {
-                    currentThis.currentPlayer = (1 + currentThis.currentPlayer) % 2;
-                    currentThis.step++;
                     return;
                 }
                 console.log("human run");
@@ -179,8 +185,12 @@
                 ).then(function (response) {
                     const validArray = response.data["valid_actions"];
                     for (const position of validArray) {
-                        currentThis.enableMatrix[position[0]][position[1]] = 1;
+                        const x = position[0];
+                        const y = position[1];
+                        currentThis.enableMatrix[x][y] = 1;
                     }
+                    console.log(currentThis.enableMatrix);
+                    console.log(currentThis.validLen);
                     currentThis.step++;
                 })
             }
@@ -196,7 +206,6 @@
         beforeCreate() {
         },
         created() {
-            this.AIRun();
             this.fetchValidPosition();
         }
     }
