@@ -4,7 +4,7 @@
             <div v-for="(point, j) in line" :key="point">
                 <Token :color="colorMatrix[i][j]"
                        :token-status="point"
-                       :position="[j,i]" v-on:onClickAndSendPosition="showPosition"></Token>
+                       :position="[i,j]" v-on:onClickAndSendPosition="showPosition"></Token>
             </div>
         </div>
     </div>
@@ -100,7 +100,7 @@
                 }
                 console.log("human run");
                 const currentThis = this;
-                const action = this.position[1] * 8 + this.position[0];
+                const action = this.position[0] * 8 + this.position[1];
                 axios.post(
                     'http://47.240.25.164:5000/next_state',
                     {
