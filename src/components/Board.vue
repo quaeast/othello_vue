@@ -146,19 +146,20 @@
             },
             humanRun: function () {
                 const currentThis = this;
+                if (this.playerStatus[this.currentPlayer] === 1) {
+                    return;
+                } 
                 if (this.validLen === 0) {
                     console.log("human skip");
                     currentThis.currentPlayer = (1 + currentThis.currentPlayer) % 2;
                     currentThis.fetchValidPosition();
                     return;
                 }
-                if (this.playerStatus[this.currentPlayer] === 1) {
-                    return;
-                }
                 if (this.enableMatrix[this.position[0]][this.position[1]] === 0) {
                     return;
                 }
                 console.log("human run");
+                currentThis.enableMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
                 const action = this.position[0] * 8 + this.position[1];
                 axios.post(
                     'http://47.240.25.164:5000/next_state',
