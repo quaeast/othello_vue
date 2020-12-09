@@ -8,12 +8,14 @@
         <input v-model="playerStatus[1]">
     </div>
     <div class="boardWrapper">
-    <Board :playerStatus="playerStatus"></Board>
+        <Board :playerStatus="playerStatus"></Board>
     </div>
 </template>
 
 <script>
     import Board from "./Board";
+
+
     export default {
         name: "Container",
         components: {Board},
@@ -26,7 +28,7 @@
 </script>
 
 <style scoped>
-    .boardWrapper{
+    .boardWrapper {
         display: flex;
         justify-content: center;
     }
