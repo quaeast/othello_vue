@@ -2,10 +2,10 @@
     <span>选择模式 1 代表 AI，0 代表人。</span>
     <div>
         <span>黑 </span>
-        <input v-model="playerStatus[0]">
+        <input v-model="playerStatusInput[0]">
         <br>
         <span>白 </span>
-        <input v-model="playerStatus[1]">
+        <input v-model="playerStatusInput[1]">
     </div>
     <div class="boardWrapper">
         <Board :playerStatus="playerStatus"></Board>
@@ -21,7 +21,15 @@
         components: {Board},
         data: function () {
             return {
-                playerStatus: [0, 1]
+                playerStatusInput: [0, 1],
+            }
+        },
+        computed:{
+            playerStatus: function () {
+                let result = [];
+                result[0] = Number(this.playerStatusInput[0]);
+                result[1] = Number(this.playerStatusInput[1]);
+                return result;
             }
         }
     }

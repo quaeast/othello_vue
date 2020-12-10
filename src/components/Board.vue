@@ -14,6 +14,10 @@
             <span>white: {{whiteNum}} </span>
             <br><br>
             <span>Turn: {{currentPlayer===0?"black":"white"}}</span>
+            <br>
+            <span>steps: {{step}}</span>
+            <br>
+            <span>{{playerStatus}}</span>
         </div>
     </div>
 </template>
@@ -119,7 +123,7 @@
                 if (this.validLen === 0) {
                     console.log("ai skip");
                     currentThis.currentPlayer = (1 + currentThis.currentPlayer) % 2;
-                    currentThis.fetchValidPosition();
+                    // currentThis.fetchValidPosition();
                     return;
                 }
                 console.log("ai run");
@@ -140,7 +144,7 @@
                         ).then(function (response) {
                             currentThis.statusMatrix = response.data["board"];
                             currentThis.currentPlayer = (1 + currentThis.currentPlayer) % 2;
-                            currentThis.fetchValidPosition();
+                            // currentThis.fetchValidPosition();
                         })
                     });
             },
@@ -148,11 +152,11 @@
                 const currentThis = this;
                 if (this.playerStatus[this.currentPlayer] === 1) {
                     return;
-                } 
+                }
                 if (this.validLen === 0) {
                     console.log("human skip");
                     currentThis.currentPlayer = (1 + currentThis.currentPlayer) % 2;
-                    currentThis.fetchValidPosition();
+                    // currentThis.fetchValidPosition();
                     return;
                 }
                 if (this.enableMatrix[this.position[0]][this.position[1]] === 0) {
@@ -171,7 +175,7 @@
                 ).then(function (response) {
                     currentThis.statusMatrix = response.data["board"];
                     currentThis.currentPlayer = (1 + currentThis.currentPlayer) % 2;
-                    currentThis.fetchValidPosition();
+                    // currentThis.fetchValidPosition();
                 })
             },
             fetchValidPosition: function () {
@@ -202,11 +206,15 @@
             },
             position: function () {
                 this.humanRun();
+            },
+            currentPlayer: function () {
+                this.fetchValidPosition();
+            },
+            playerStatus: function () {
+                this.fetchValidPosition();
             }
         },
-        beforeCreate() {
-        },
-        created() {
+        beforeMount() {
             this.fetchValidPosition();
         }
     }
