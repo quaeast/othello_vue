@@ -50,6 +50,7 @@
         return curPlayer === 0 ? -1 : curPlayer;
     }
 
+    const baseURL = 'https://www.quaeast.cn/api';
 
     const statusMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 1, 0, 0, 0], [0, 0, 0, 1, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
     // const zeroMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
@@ -128,14 +129,14 @@
                 }
                 console.log("ai run");
                 axios.post(
-                    'http://47.240.25.164:5000/prob',
+                    baseURL+'/prob',
                     {
                         "board": currentThis.statusMatrix,
                         "cur_player": mapToColorNum(currentThis.currentPlayer)
                     })
                     .then(function (response) {
                         axios.post(
-                            'http://47.240.25.164:5000/next_state',
+                            baseURL+'/next_state',
                             {
                                 "board": currentThis.statusMatrix,
                                 "cur_player": mapToColorNum(currentThis.currentPlayer),
@@ -166,7 +167,7 @@
                 currentThis.enableMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
                 const action = this.position[0] * 8 + this.position[1];
                 axios.post(
-                    'http://47.240.25.164:5000/next_state',
+                    baseURL+'/next_state',
                     {
                         "board": currentThis.statusMatrix,
                         "cur_player": mapToColorNum(currentThis.currentPlayer),
@@ -185,7 +186,7 @@
                 const currentThis = this;
                 currentThis.enableMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
                 axios.post(
-                    'http://47.240.25.164:5000/valid',
+                    baseURL+ '/valid',
                     {
                         "board": currentThis.statusMatrix,
                         "cur_player": mapToColorNum(currentThis.currentPlayer),
