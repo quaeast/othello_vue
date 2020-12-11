@@ -18,7 +18,6 @@
             <br>
             <span>steps: {{step}}</span>
             <br>
-            <span>{{playerStatus}}</span>
         </div>
     </div>
 </template>
@@ -180,7 +179,7 @@
                 })
             },
             fetchValidPosition: function () {
-                if (this.step>200){
+                if (this.step > 200) {
                     return;
                 }
                 const currentThis = this;
