@@ -10,9 +10,10 @@
             </div>
         </div>
         <div>
+            <br>
             <span>black: {{blackNum}} | </span>
             <span>white: {{whiteNum}} </span>
-            <br><br>
+            <br>
             <span>Turn: {{currentPlayer===0?"black":"white"}}</span>
             <br>
             <span>steps: {{step}}</span>
