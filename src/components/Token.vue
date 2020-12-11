@@ -1,6 +1,7 @@
 <template>
     <div class="grid">
         <div class="token"
+             :class="{preStep: isPre}"
              v-on:click="sendPositionToBoard"
              :style="{backgroundColor: color}"></div>
     </div>
@@ -10,6 +11,7 @@
     export default {
         name: "Token",
         props:{
+            isPre: Boolean,
             color: String,
             tokenStatus: Number,
             position: Array
@@ -35,5 +37,9 @@
         width: 44px;
         height: 44px;
         border-radius: 50%;
+    }
+
+    .preStep {
+        box-shadow: 0px 0px 5px 5px #4598f4;
     }
 </style>

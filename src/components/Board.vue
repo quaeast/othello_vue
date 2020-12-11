@@ -5,6 +5,7 @@
                 <div v-for="(point, j) in line" :key="point">
                     <Token :color="colorMatrix[i][j]"
                            :token-status="point"
+                           :is-pre="prePosition[0]===i && prePosition[1]===j"
                            :position="[i,j]" v-on:onClickAndSendPosition="showPosition"></Token>
                 </div>
             </div>
@@ -72,6 +73,7 @@
                 // 当前执棋者身份，0黑棋（-1），1白棋（1）
                 currentPlayer: 0,
                 step: 0,
+                prePosition: [-1, -1]
             }
         },
         computed: {
@@ -129,18 +131,20 @@
                 }
                 console.log("ai run");
                 axios.post(
-                    baseURL+'/prob',
+                    baseURL + '/prob',
                     {
                         "board": currentThis.statusMatrix,
                         "cur_player": mapToColorNum(currentThis.currentPlayer)
                     })
                     .then(function (response) {
+                        let action = response.data["action"];
+                        currentThis.prePosition = [Math.floor(action/8), action%8];
                         axios.post(
-                            baseURL+'/next_state',
+                            baseURL + '/next_state',
                             {
                                 "board": currentThis.statusMatrix,
                                 "cur_player": mapToColorNum(currentThis.currentPlayer),
-                                "action": response.data["action"]
+                                "action": action
                             }
                         ).then(function (response) {
                             currentThis.statusMatrix = response.data["board"];
@@ -167,7 +171,7 @@
                 currentThis.enableMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
                 const action = this.position[0] * 8 + this.position[1];
                 axios.post(
-                    baseURL+'/next_state',
+                    baseURL + '/next_state',
                     {
                         "board": currentThis.statusMatrix,
                         "cur_player": mapToColorNum(currentThis.currentPlayer),
@@ -186,7 +190,7 @@
                 const currentThis = this;
                 currentThis.enableMatrix = [[0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0]];
                 axios.post(
-                    baseURL+ '/valid',
+                    baseURL + '/valid',
                     {
                         "board": currentThis.statusMatrix,
                         "cur_player": mapToColorNum(currentThis.currentPlayer),
